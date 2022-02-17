@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import config from "./config";
-import beneficioRoutes from "./routes/beneficio.routes";
+import routes from "./routes/routes";
 
 const app = express();
 
@@ -14,6 +14,6 @@ app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use(beneficioRoutes);
+app.use(routes);
 
 export default app;

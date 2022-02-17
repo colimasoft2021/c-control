@@ -1,15 +1,18 @@
 import sql from 'mssql';
 import config from "../config"; 
 
+let buff = Buffer.from(config.db_password, 'base64');  
+let db_password = buff.toString('utf-8');
+
 export const dbSettings = {
     user: config.db_user,
-    password: config.db_password,
+    password: db_password,
     server: config.db_server,
     database: config.db_database,
     port: 1433,
     options: {
-        encrypt: true,
-        trustServerCertificate: true
+        encrypt: false,
+        trustServerCertificate: false
     }
 }
 
@@ -21,5 +24,5 @@ export const getConnection = async () => {
       console.error(error);
     }
 };
-  
+
 export { sql };
