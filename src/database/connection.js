@@ -7,6 +7,10 @@ export const dbSettings = {
     server: config.db_server,
     database: config.db_database,
     port: 1433,
+    dialect: "mssql",
+    dialectOptions: {
+        instanceName: "SQLEXPRESS"
+    },
     options: {
         encrypt: true,
         trustServerCertificate: true
