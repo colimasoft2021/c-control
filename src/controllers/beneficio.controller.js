@@ -1,20 +1,6 @@
 import axios from "axios";
 import { getConnection, querys, sql } from "../database/index";
 
-const obtenerConfiguracion = async(req, res) => {
-    res.json('test');
-    const pool = await getConnection();
-    console.log(pool);
-}
-
-const calcularBeneficio = (req, res) => {
-
-}
-
-const bitacoraBeneficio = (req, res) => {
-
-}
-
 const acumulacionComponenteCentral = async(req, res) => {
     const { id_cliente, Monedero, Caja, Cajero, Sucursal, Monto, TipoMovimiento } = req.body;
     let msgProcesoNoTerminado = {CodigoEstatus: "", Mensaje: ""};
@@ -202,8 +188,5 @@ const actualizarEstatusMonederoTransDb = async(res, Id_Trans, StatusDb, Autoriza
 }
 
 module.exports = {
-    obtenerConfiguracion,
-    calcularBeneficio,
-    bitacoraBeneficio,
     acumulacionComponenteCentral
 }

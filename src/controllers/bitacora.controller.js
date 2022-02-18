@@ -8,11 +8,13 @@ const bitacoraBeneficio = async(req, res) => {
     } = req.body;
     let resultado = {};
     if(tipo_cliente === "invitado"){
-        let resultado = await procesoInvitado(res, req.body);
+        resultado = await procesoInvitado(res, req.body);
+    }else {
+        resultado = await procesoRegistrado(res, req.body);
     }
 }
 
-const procesoInvitado = (res, data) => {
+const procesoRegistrado = (res, data) => {
     const {
         Correo,
         Estatus_Movimiento,
@@ -20,13 +22,6 @@ const procesoInvitado = (res, data) => {
         Monto_Acum,
         caja
     } = data;
-    let datosCliente = await obtenerDatosCliente(Correo);
-    if(!datosCliente.length) {
-        return res.send({CodigoEstatus: 01, MensajeEstatus: "Sin monedero CF"});
-    }
-    if(datosCliente.ESTATUSCUENTA === false){
-        return res.send({CodigoEstatus: 02, MensajeEstatus: "Monedero CF inactivo"});
-    }
     let CuentaEncriptada = encriptarBase64(datosCliente.NUMEROCUENTA);
     let resultadoRegistro = await registrarClienteBitacoraBeneficio(res, data, CuentaEncriptada);
     if(Estatus_Movimiento === 'PagoPendiente' || Estatus_Movimiento === 'PagoCancelado'){
@@ -46,21 +41,17 @@ const procesoInvitado = (res, data) => {
 
 }
 
-const procesoRegistrado = () => {
-    const {
-        tipo_cliente,
-        id_cliente,
-        Correo,
-        Tipo_proceso,
-        id_Pedido,
-        Monto_Total,
-        Fecha_Pago,
-        Forma_Pago,
-        Monto_Acum,
-        Estatus_Movimiento,
-        id_monedero,
-        caja
-    } = data;
+const procesoInvitado = (res, data) => {
+    const { Correo } = data;
+    let datosCliente = await obtenerDatosCliente(Correo);
+    let CuentaEncriptada = encriptarBase64(datosCliente.NUMEROCUENTA);
+    if(!datosCliente.length) {
+        return res.send({CodigoEstatus: 01, MensajeEstatus: "Sin monedero CF"});
+    }
+    if(datosCliente.ESTATUSCUENTA === false){
+        return res.send({CodigoEstatus: 02, MensajeEstatus: "Monedero CF inactivo"});
+    }
+    let resultadoRegistro = await registrarClienteBitacoraBeneficio(res, data, CuentaEncriptada);
 }
 
 const obtenerDatosCliente = async (Correo) => {
@@ -138,8 +129,21 @@ const acumularComponenteCentral = async(id_cliente, Monto_Acum, caja, CuentaEncr
     } catch (error) {
         return ({error: error.message});
     }
-    
 }
+
+const actualizarBitacoraBeneficio = async(id) => {
+    try {
+        const pool = await getConnection();
+        const result = await pool.request()
+          .input("id", sql.Int, id)
+          .input("Estatus_Movimiento", sql.VarChar, "AumulacionCompleta")
+          .query(querys.actualizarBitacoraBeneficio);
+       return ({status: 'ok'});
+    } catch (error) {
+        console.log('erorr');
+        return ({error: error.message});
+    }
+};
 
 module.exports = {
     bitacoraBeneficio,
