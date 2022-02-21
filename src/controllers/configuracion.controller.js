@@ -32,7 +32,7 @@ const calcularBeneficio = async (req, res) => {
     let multiplo = parseFloat(result.data.mensaje)
     let beneficio = 0;
     beneficio = parseFloat(MontoTotal) * multiplo;
-    return res.send({codigo: 01, MontoBeneficio: beneficio});
+    return res.send({codigo: "01", MontoBeneficio: beneficio});
 }
 
 module.exports = {

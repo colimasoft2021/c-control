@@ -14,7 +14,7 @@ const bitacoraBeneficio = async(req, res) => {
     }
 }
 
-const procesoRegistrado = (res, data) => {
+const procesoRegistrado = async(res, data) => {
     const {
         Correo,
         Estatus_Movimiento,
@@ -25,7 +25,7 @@ const procesoRegistrado = (res, data) => {
     let CuentaEncriptada = encriptarBase64(datosCliente.NUMEROCUENTA);
     let resultadoRegistro = await registrarClienteBitacoraBeneficio(res, data, CuentaEncriptada);
     if(Estatus_Movimiento === 'PagoPendiente' || Estatus_Movimiento === 'PagoCancelado'){
-        return res.send({CodigoEstatus: 03, MensajeEstatus: Estatus_Movimiento});
+        return res.send({CodigoEstatus: "03", MensajeEstatus: Estatus_Movimiento});
     }else if(Estatus_Movimiento === 'PendienteAcumulacion'){
         let resultadoAcumulacion = acumularComponenteCentral(id_cliente, Monto_Acum, caja, CuentaEncriptada);
         if(resultadoAcumulacion.eror){
@@ -33,23 +33,23 @@ const procesoRegistrado = (res, data) => {
         }
         if(resultadoAcumulacion.CodigoEstatus === '00'){
             actualizarBitacoraBeneficio(resultadoRegistro.id);
-            return res.send({CodigoEstatus: 04, MensajeEstatus: "Acumulación existosa", MontoAcumulado: Monto_Acum})
+            return res.send({CodigoEstatus: "04", MensajeEstatus: "Acumulación existosa", MontoAcumulado: Monto_Acum})
         }else{
-            return res.send({CodigoEstatus: 05, MensajeEstatus: "Acumulación pendiente", MontoAcumulado: ""})
+            return res.send({CodigoEstatus: "05", MensajeEstatus: "Acumulación pendiente", MontoAcumulado: ""})
         }
     }
 
 }
 
-const procesoInvitado = (res, data) => {
+const procesoInvitado = async(res, data) => {
     const { Correo } = data;
     let datosCliente = await obtenerDatosCliente(Correo);
     let CuentaEncriptada = encriptarBase64(datosCliente.NUMEROCUENTA);
     if(!datosCliente.length) {
-        return res.send({CodigoEstatus: 01, MensajeEstatus: "Sin monedero CF"});
+        return res.send({CodigoEstatus: "01", MensajeEstatus: "Sin monedero CF"});
     }
     if(datosCliente.ESTATUSCUENTA === false){
-        return res.send({CodigoEstatus: 02, MensajeEstatus: "Monedero CF inactivo"});
+        return res.send({CodigoEstatus: "02", MensajeEstatus: "Monedero CF inactivo"});
     }
     let resultadoRegistro = await registrarClienteBitacoraBeneficio(res, data, CuentaEncriptada);
 }
@@ -69,7 +69,7 @@ const encriptarBase64 = (dato) => {
     return encoded;
 }
 
-const registrarClienteBitacoraBeneficio = (res, data, CuentaEncriptada) => {
+const registrarClienteBitacoraBeneficio = async(res, data, CuentaEncriptada) => {
     const {
         tipo_cliente,
         id_cliente,

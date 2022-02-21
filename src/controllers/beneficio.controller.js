@@ -3,6 +3,7 @@ import { getConnection, querys, sql } from "../database/index";
 
 const acumulacionComponenteCentral = async(req, res) => {
     const { id_cliente, Monedero, Caja, Cajero, Sucursal, Monto, TipoMovimiento } = req.body;
+    console.log(req.body);
     let msgProcesoNoTerminado = {CodigoEstatus: "", Mensaje: ""};
     let montoParseado = Monto * 100;
     let idMonedero = desencriptarBase64(Monedero);
@@ -13,7 +14,7 @@ const acumulacionComponenteCentral = async(req, res) => {
     if(statusMonedero !== "00") {
         msgProcesoNoTerminado.CodigoEstatus = statusMonedero;
         msgProcesoNoTerminado.Mensaje = msgMonedero;
-        //return res.send(msgProcesoNoTerminado);
+        return res.send(msgProcesoNoTerminado);
     }
     //CONTINUAR PROCESO SI EL CODIGO DE ESTATUS ES 00
     let resMonederoTransDb = await insertarMonederoTransDb(res, id_cliente, TipoMovimiento, Monto, Monedero);
