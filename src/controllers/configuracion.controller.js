@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getConnection, querys, sql } from "../database/index";
+import config from "../config"; 
 
 const obtenerConfiguracion = async (req, res) => {
     const { Clave } = req.body
@@ -23,7 +24,7 @@ const calcularBeneficio = async (req, res) => {
     const { MontoTotal } = req.body
     let result = {};
     try {
-        result = await axios.post('http://localhost:3002/api/obtener-configuracion', {
+        result = await axios.post(`http://${config.host}:${config.port}/api/obtener-configuracion`, {
             Clave: "CFB"
         });
     } catch (error) {

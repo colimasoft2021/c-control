@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getConnection, querys, sql } from "../database/index";
+import config from "../config"; 
 
 const acumulacionComponenteCentral = async(req, res) => {
     const { id_cliente, Monedero, Caja, Cajero, Sucursal, Monto, TipoMovimiento } = req.body;
@@ -31,7 +32,7 @@ const acumulacionComponenteCentral = async(req, res) => {
         resMonederoOmniTrans = await devolverMonederoOmniTrans(res, idMonedero, Caja, Sucursal, Cajero, Transaccion, montoParseado);
     }else if(TipoMovimiento === 'R') {
         StatusDb = "REDIMIDO";
-        resMonederoOmniTrans = await redimirMonederoOmniTrans(res, idMonedero, Caja, Sucursal, Cajero, Transaccion);
+        resMonederoOmniTrans = await redimirMonederoOmniTrans(res, idMonedero, Caja, Sucursal, Cajero, Transaccion, montoParseado);
     }
     let Autorizacion = null;
     let MsgError = null;
@@ -110,10 +111,14 @@ const acumularMonederoOmniTrans = async(res, idMonedero, Caja, Sucursal, Cajero,
         let result = await axios.put('http://10.0.15.80/apiOmnitransGlobal/api/Omnitrans',{
             Monedero: idMonedero,
             Caja: Caja,
-            sucursal: Sucursal,
             Cajero: Cajero,
             Transaccion: Transaccion,
             Monto: montoParseado,
+        }, {
+            auth: {
+                username: config.auth_user,
+                password: config.auth_password
+            }
         });
         return result.data;
     } catch (error) {
@@ -129,30 +134,43 @@ const devolverMonederoOmniTrans =  async(res, idMonedero, Caja, Sucursal, Cajero
         let result = await axios.post('http://10.0.15.80/apiOmnitransGlobal/api/Devolucion',{
             Monedero: idMonedero,
             Caja: Caja,
-            sucursal: Sucursal,
             Cajero: Cajero,
             Transaccion: Transaccion,
             Monto: montoParseado,
+            sucursal: Sucursal,
+        }, {
+            auth: {
+                username: config.auth_user,
+                password: config.auth_password
+            }
         });
         return result.data;
     } catch (error) {
-        return res.status(405).send({error: error.message});
+        console.log(error);
+        return ({error: error.message});
     }
 }
 
-const redimirMonederoOmniTrans =  async(res, idMonedero, Caja, Sucursal, Cajero, Transaccion) => {
+const redimirMonederoOmniTrans =  async(res, idMonedero, Caja, Sucursal, Cajero, Transaccion, montoParseado) => {
     console.log("redimirMonederoOmniTrans");
     try {
         let result = await axios.post('http://10.0.15.80/apiOmnitransGlobal/api/Omnitrans',{
+            Importe: montoParseado,
             Monedero: idMonedero,
             Caja: Caja,
-            sucursal: Sucursal,
             Cajero: Cajero,
-            Transaccion: Transaccion
+            Transaccion: Transaccion,
+            sucursal: Sucursal,
+        }, {
+            auth: {
+                username: config.auth_user,
+                password: config.auth_password
+            }
         });
         return result.data;
     } catch (error) {
-        return res.status(405).send({error: error.message});
+        console.log(error);
+        return ({error: error.message});
     }
     
 }
