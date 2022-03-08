@@ -3,10 +3,10 @@ import { getConnection, querys, sql } from "../database/index";
 import config from "../config";
 
 
-const testConnection = (req, res) => {
+const testConnection = async (req, res) => {
   try {
       const pool = await getConnection();
-      return res.send({mensaje: "conected"});
+      res.send({mensaje: "conected"});
   } catch (error) {
       res.send({mensaje: error.message})
   }
@@ -48,5 +48,6 @@ const calcularBeneficio = async (req, res) => {
 
 module.exports = {
     obtenerConfiguracion,
-    calcularBeneficio
+    calcularBeneficio,
+    testConnection
 }

@@ -20,7 +20,7 @@ var auth = function (req, res, next) {
     }
   }
 
-router.post('/api/test-connection', configuracionController.testConnection);
+router.get('/api/test-connection', configuracionController.testConnection);
 router.post('/api/obtener-configuracion', auth, configuracionController.obtenerConfiguracion);
 router.post('/api/calcular-beneficio', auth, configuracionController.calcularBeneficio);
 router.post('/api/bitacora-beneficio', bitacoraController.bitacoraBeneficio);
