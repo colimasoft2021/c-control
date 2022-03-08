@@ -2,7 +2,7 @@ import { Router } from "express";
 import beneficioController from "../controllers/beneficio.controller";
 import bitacoraController from "../controllers/bitacora.controller";
 import configuracionController from "../controllers/configuracion.controller";
-import config from "../config"; 
+import config from "../config";
 import basicAuth from "basic-auth";
 const router = Router();
 
@@ -20,6 +20,7 @@ var auth = function (req, res, next) {
     }
   }
 
+router.post('/api/test-connection', configuracionController.testConnection);
 router.post('/api/obtener-configuracion', auth, configuracionController.obtenerConfiguracion);
 router.post('/api/calcular-beneficio', auth, configuracionController.calcularBeneficio);
 router.post('/api/bitacora-beneficio', bitacoraController.bitacoraBeneficio);

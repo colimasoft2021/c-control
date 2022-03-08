@@ -1,6 +1,16 @@
 import axios from "axios";
 import { getConnection, querys, sql } from "../database/index";
-import config from "../config"; 
+import config from "../config";
+
+
+const testConnection = (req, res) => {
+  try {
+      const pool = await getConnection();
+      return res.send({mensaje: "conected"});
+  } catch (error) {
+      res.send({mensaje: error.message})
+  }
+}
 
 const obtenerConfiguracion = async (req, res) => {
     const { Clave } = req.body
