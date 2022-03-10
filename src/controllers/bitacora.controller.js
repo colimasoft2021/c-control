@@ -1,4 +1,5 @@
 import axios from "axios";
+import res from "express/lib/response";
 import { getConnection, querys, sql } from "../database/index";
 
 
@@ -145,6 +146,31 @@ const actualizarBitacoraBeneficio = async(id) => {
     }
 };
 
+const actualizacionBitacoraBeneficio = async(req, res) => {
+    const {Id_Pedido, Estatus_Movimiento} = req.body;
+    try {
+        const pool = await getConnection();
+        const dataResult = await pool.request()
+          .input("id_pedido", sql.Int, Id_Pedido)
+          .query(querys.obtenerBitacoraBeneficio);
+        if(dataResult.recordset.length > 0) {
+            dataResult.recordset.map(async (item) => {
+                const insertado = await pool.request()
+                .input("id", sql.Int, item.id)
+                .input("Estatus_Movimiento", sql.VarChar, Estatus_Movimiento)
+                .query(querys.actualizarBitacoraBeneficio);
+            })
+            return res.send({CodigoEstatus: "06", MensajeEstatus: "Estatus actualizado a " + Estatus_Movimiento})
+        } else {
+            return res.send({CodigoEstatus: "06", MensajeEstatus: "Pedido no existe"});
+        }
+    } catch (error) {
+        return ({error: error.message})
+    }
+}
+
+
 module.exports = {
     bitacoraBeneficio,
+    actualizacionBitacoraBeneficio,
 }

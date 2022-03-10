@@ -6,4 +6,5 @@ export const querys = {
   obtenerUltimaTransaccionBitacora: "SELECT TOP (1) * FROM Bitacora_BeneficioCF WHERE Id_Monedero = @Id_Monedero ORDER BY id DESC",
   actualizarBitacoraBeneficio: "UPDATE Bitacora_BeneficioCF SET Estatus_Movimiento = @Estatus_Movimiento WHERE id = @id",
   obtenerConfiguracion: "SELECT * FROM Configuraciones WHERE Clave = @Clave",
+  obtenerBitacoraBeneficio: "SELECT * FROM Bitacora_BeneficioCF WHERE Id_Pedido = @id_pedido AND Estatus_Movimiento != 'PagoCancelado'",
 };

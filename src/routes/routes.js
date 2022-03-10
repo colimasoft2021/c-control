@@ -25,5 +25,6 @@ router.post('/api/obtener-configuracion', auth, configuracionController.obtenerC
 router.post('/api/calcular-beneficio', auth, configuracionController.calcularBeneficio);
 router.post('/api/bitacora-beneficio', bitacoraController.bitacoraBeneficio);
 router.post('/api/acumulacion-componente-central', beneficioController.acumulacionComponenteCentral);
+router.post('/api/actualizar-bitacora-beneficio', bitacoraController.actualizacionBitacoraBeneficio);
 
 export  default router;
