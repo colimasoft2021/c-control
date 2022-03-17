@@ -24,7 +24,6 @@ const procesoRegistrado = async(res, data) => {
         caja,
         id_monedero
     } = data;
-    console.log("proceso registrado");
     let resultadoRegistro = await registrarClienteBitacoraBeneficio(res, data, id_monedero);
     if(resultadoRegistro.error){
         return ({Error: resultadoRegistro.error});
@@ -123,14 +122,12 @@ const registrarClienteBitacoraBeneficio = async(res, data, Numero_cuenta) => {
 
         return (insertado.recordset[0]);
     } catch (error) {
-        console.log(error);
         return ({error: error.message});
     }
 }
 
 const acumularComponenteCentral = async(id_cliente, Monto_Acum, caja, id_monedero) => {
     let monedero = desencriptarBase64(id_monedero);
-    console.log(monedero);
     try {
         let resultado = await axios.post('localhost:3001/api/acumulacion-componente-central',{
             id_cliente: id_cliente,
@@ -162,7 +159,6 @@ const actualizarBitacoraBeneficio = async(id) => {
           .query(querys.actualizarBitacoraBeneficio);
        return ({status: 'ok'});
     } catch (error) {
-        console.log('erorr');
         return ({error: error.message});
     }
 };

@@ -4,7 +4,6 @@ import config from "../config";
 
 const acumulacionComponenteCentral = async(req, res) => {
     const { id_cliente, Monedero, Caja, Cajero, Sucursal, Monto, TipoMovimiento } = req.body;
-    console.log(req.body);
     let msgProcesoNoTerminado = {CodigoEstatus: "", Mensaje: ""};
     let montoParseado = Monto * 100;
     let idMonedero = desencriptarBase64(Monedero);
@@ -19,7 +18,6 @@ const acumulacionComponenteCentral = async(req, res) => {
     }
     //CONTINUAR PROCESO SI EL CODIGO DE ESTATUS ES 00
     let resMonederoTransDb = await insertarMonederoTransDb(res, id_cliente, TipoMovimiento, Monto, Monedero);
-    console.log(resMonederoTransDb);
     let Transaccion = resMonederoTransDb.Transaccion;
     let Id_Trans = resMonederoTransDb.Id_Trans;
     let resMonederoOmniTrans = {};
@@ -36,7 +34,6 @@ const acumulacionComponenteCentral = async(req, res) => {
     }
     let Autorizacion = null;
     let MsgError = null;
-    console.log(resMonederoOmniTrans);
     if(!resMonederoOmniTrans.error){
         if(resMonederoOmniTrans.Codigoestatus === '00'){
             Autorizacion = resMonederoOmniTrans.Autorizacion;
@@ -45,8 +42,6 @@ const acumulacionComponenteCentral = async(req, res) => {
             MsgError = resMonederoOmniTrans.Mensaje;
         }
         let result = actualizarEstatusMonederoTransDb(res, Id_Trans, StatusDb, Autorizacion, MsgError);
-        console.log(result);
-        
     }
     return res.send(resMonederoOmniTrans);
 }
@@ -58,7 +53,6 @@ const desencriptarBase64 = (encrypted) => {
 }
 
 const obtenerStatusMonedero = async(res, idMonedero) => {
-    console.log('obtenerStatusMonedero');
     try {
         const resultado = await axios.get(`http://10.0.15.80/apiOmnitransGlobal/api/Omnitrans?MonId=${idMonedero}`);
         return resultado; 
@@ -68,7 +62,6 @@ const obtenerStatusMonedero = async(res, idMonedero) => {
 }
 
 const insertarMonederoTransDb = async(res, id_cliente, TipoMovimiento, Monto, Monedero) => {
-    console.log("insertarMonederoTransDb");
     let tipoMov = "";
     if(TipoMovimiento === "D" || TipoMovimiento === "I"){
         tipoMov = "ACUMULADO";
@@ -106,7 +99,6 @@ const insertarMonederoTransDb = async(res, id_cliente, TipoMovimiento, Monto, Mo
 }
 
 const acumularMonederoOmniTrans = async(res, idMonedero, Caja, Sucursal, Cajero, Transaccion, montoParseado) => {
-    console.log("acumularMonederoOmniTrans")
     try {
         let result = await axios.put('http://10.0.15.80/apiOmnitransGlobal/api/Omnitrans',{
             Monedero: idMonedero,
@@ -122,14 +114,12 @@ const acumularMonederoOmniTrans = async(res, idMonedero, Caja, Sucursal, Cajero,
         });
         return result.data;
     } catch (error) {
-        console.log(error);
         return ({error: error.message});
     }
     
 }
 
 const devolverMonederoOmniTrans =  async(res, idMonedero, Caja, Sucursal, Cajero, Transaccion, montoParseado) => {
-    console.log("devolverMonederoOmniTrans");
     try {
         let result = await axios.post('http://10.0.15.80/apiOmnitransGlobal/api/Devolucion',{
             Monedero: idMonedero,
@@ -146,13 +136,11 @@ const devolverMonederoOmniTrans =  async(res, idMonedero, Caja, Sucursal, Cajero
         });
         return result.data;
     } catch (error) {
-        console.log(error);
         return ({error: error.message});
     }
 }
 
 const redimirMonederoOmniTrans =  async(res, idMonedero, Caja, Sucursal, Cajero, Transaccion, montoParseado) => {
-    console.log("redimirMonederoOmniTrans");
     try {
         let result = await axios.post('http://10.0.15.80/apiOmnitransGlobal/api/Omnitrans',{
             Importe: montoParseado,
@@ -169,7 +157,6 @@ const redimirMonederoOmniTrans =  async(res, idMonedero, Caja, Sucursal, Cajero,
         });
         return result.data;
     } catch (error) {
-        console.log(error);
         return ({error: error.message});
     }
     
@@ -190,7 +177,6 @@ const obtenerUltimaTransaccionMonedero = async(Monedero) => {
 }
 
 const actualizarEstatusMonederoTransDb = async(res, Id_Trans, StatusDb, Autorizacion, MsgError) => {
-    console.log("actualizarEstatusMonederoTransDb");
     try {
         const pool = await getConnection();
         const result = await pool.request()
@@ -201,7 +187,6 @@ const actualizarEstatusMonederoTransDb = async(res, Id_Trans, StatusDb, Autoriza
           .query(querys.actualizarMonederoDb);
        return ({status: 'ok'});
     } catch (error) {
-        console.log('erorr');
         return ({error: error.message});
     }
 }
