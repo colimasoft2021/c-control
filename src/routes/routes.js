@@ -7,24 +7,24 @@ import basicAuth from "basic-auth";
 const router = Router();
 
 var auth = function (req, res, next) {
-    var authData = basicAuth(req);
-    if (!authData || !authData.name || !authData.pass) {
-        res.sendStatus(401).send({error: 'Petición no autorizada'});
-        return;
-    }
-    if (authData.name === config.auth_user && authData.pass === config.auth_password) {
-      next();
-    } else {
-        res.sendStatus(401).send({error: 'Petición no autorizada'});
-        return;
-    }
+  var authData = basicAuth(req);
+  if (!authData || !authData.name || !authData.pass) {
+      res.sendStatus(401).send({error: 'Petición no autorizada'});
+      return;
   }
+  if (authData.name === config.auth_user && authData.pass === config.auth_password) {
+    next();
+  } else {
+      res.sendStatus(401).send({error: 'Petición no autorizada'});
+      return;
+  }
+}
 
 router.get('/api/test-connection', configuracionController.testConnection);
 router.post('/api/obtener-configuracion', auth, configuracionController.obtenerConfiguracion);
 router.post('/api/calcular-beneficio', auth, configuracionController.calcularBeneficio);
-router.post('/api/bitacora-beneficio', bitacoraController.bitacoraBeneficio);
-router.post('/api/acumulacion-componente-central', beneficioController.acumulacionComponenteCentral);
-router.post('/api/actualizar-bitacora-beneficio', bitacoraController.actualizacionBitacoraBeneficio);
+router.post('/api/registrar-bitacora-beneficio', auth, bitacoraController.bitacoraBeneficio);
+router.post('/api/acumulacion-componente-central', auth, beneficioController.acumulacionComponenteCentral);
+router.post('/api/actualizar-bitacora-beneficio', auth, bitacoraController.actualizacionBitacoraBeneficio);
 
 export  default router;
