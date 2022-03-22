@@ -31,19 +31,29 @@ const obtenerConfiguracion = async (req, res) => {
 }
 
 const calcularBeneficio = async (req, res) => {
-    const { MontoTotal } = req.body
-    let result = {};
+    const { MontoTotal } = req.body;
+    let msgRetorno = {};
     try {
-        result = await axios.post(`http://${config.host}:${config.port}/api/obtener-configuracion`, {
+        const configuracion = await axios.post(`http://${config.host}:${config.port}/api/obtener-configuracion`, {
             Clave: "CFB"
+        }, {
+            auth: {
+                username: config.auth_user,
+                password: config.auth_password
+            }
         });
-    } catch (error) {
-        return res.send({mensaje: error.message});
+        if(configuracion.data.mensaje){
+            let multiplo = parseFloat(configuracion.data.mensaje)
+            let beneficio = 0;
+            beneficio = parseFloat(MontoTotal) * multiplo;
+            msgRetorno = {codigo: "01", MontoBeneficio: beneficio};
+        }else{
+            msgRetorno = {codigo: "02", Mensaje: "No existe la clave en la configuración"};
+        }
+    } catch (error){
+        msgRetorno = {error: error.message};
     }
-    let multiplo = parseFloat(result.data.mensaje)
-    let beneficio = 0;
-    beneficio = parseFloat(MontoTotal) * multiplo;
-    return res.send({codigo: "01", MontoBeneficio: beneficio});
+    return res.send(msgRetorno);
 }
 
 module.exports = {
