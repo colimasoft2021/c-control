@@ -1,7 +1,7 @@
 import axios from "axios";
 import res from "express/lib/response";
 import { getConnection, querys, sql } from "../database/index";
-
+import config from "../config";
 
 const bitacoraBeneficio = async(req, res) => {
     const {
@@ -31,7 +31,7 @@ const procesoRegistrado = async(res, data) => {
     if(Estatus_Movimiento === 'PagoPendiente' || Estatus_Movimiento === 'PagoCancelado'){
         return ({CodigoEstatus: "03", MensajeEstatus: Estatus_Movimiento});
     }else if(Estatus_Movimiento === 'PendienteAcumulacion'){
-        let resultadoAcumulacion = acumularComponenteCentral(id_cliente, Monto_Acum, caja, id_monedero);
+        let resultadoAcumulacion = await acumularComponenteCentral(id_cliente, Monto_Acum, caja, id_monedero);
         if(resultadoAcumulacion.error){
             return ({Error: resultadoAcumulacion.error})
         }
@@ -127,17 +127,21 @@ const registrarClienteBitacoraBeneficio = async(res, data, Numero_cuenta) => {
 }
 
 const acumularComponenteCentral = async(id_cliente, Monto_Acum, caja, id_monedero) => {
-    let monedero = desencriptarBase64(id_monedero);
     try {
-        let resultado = await axios.post('localhost:3001/api/acumulacion-componente-central',{
+        let resultado = await axios.post(`http://${config.host}:${config.port}/api/acumulacion-componente-central`,{
             id_cliente: id_cliente,
-            Monedero: monedero,
+            Monedero: id_monedero,
             Caja: caja,
             Cajero: "9999",
-            Sucursal: "999",
+            Sucursal: "9999",
             Monto: Monto_Acum,
             TipoMovimiento: "I"
-        })
+        }, {
+            auth: {
+                username: config.auth_user,
+                password: config.auth_password
+            }
+        });
         return resultado.data;
     } catch (error) {
         return ({error: error.message});
